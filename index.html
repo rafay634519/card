@@ -90,6 +90,7 @@
 
         .button-row {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             margin-top: 18px;
         }
@@ -126,6 +127,136 @@
 
         .download-button:active {
             transform: translateY(0);
+        }
+
+        .generate-button {
+            flex-basis: 100%;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            font-size: 13px;
+        }
+
+        .generate-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(124, 58, 237, 0.45);
+        }
+
+        .generate-button:active {
+            transform: translateY(0);
+        }
+
+        .generate-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .api-key-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e7e9;
+        }
+
+        .api-key-section h2 {
+            margin: 0 0 4px;
+            font-size: 15px;
+            color: #172d58;
+        }
+
+        .api-key-section p {
+            margin: 0 0 8px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .api-key-section input {
+            width: 100%;
+            padding: 7px 9px;
+            border: 1px solid #ccd3cf;
+            border-radius: 6px;
+            outline: none;
+            font: inherit;
+            font-size: 13px;
+        }
+
+        .api-key-section input:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        /* Result Modal */
+        .result-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .result-overlay.active {
+            display: flex;
+        }
+
+        .result-modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .result-modal h2 {
+            margin: 0 0 16px;
+            color: #172d58;
+            font-size: 20px;
+        }
+
+        .result-modal img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .result-modal .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .result-modal button {
+            padding: 10px 24px;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .modal-download-btn {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+        }
+
+        .modal-close-btn {
+            background: #e2e7e9;
+            color: #334a50;
+        }
+
+        .generate-status {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #7c3aed;
+            min-height: 18px;
         }
 
         /* ID Card Layout */
@@ -456,6 +587,17 @@
                 <button class="reset-button" type="reset">Reset</button>
                 <button class="clear-photo-button" id="clearPhotoButton" type="button">Reset Photo</button>
                 <button class="download-button" id="downloadButton" type="button">⬇ Download</button>
+                <button class="generate-button" id="generateButton" type="button">✨ Generate Holding Image (AI)</button>
+            </div>
+            <div id="generateStatus" class="generate-status"></div>
+
+            <div class="api-key-section">
+                <h2>Gemini AI Integration</h2>
+                <p>Paste your Google Gemini API key to generate an AI image of the person holding this ID card. Get a
+                    key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a></p>
+                <label for="apiKeyInput">API Key</label>
+                <input id="apiKeyInput" type="password" placeholder="AIza..."
+                    value="AIzaSyBIiGq_6EIt4Pp7gES1dhosL72C7Y9vIOY" />
             </div>
         </form>
 
@@ -537,6 +679,18 @@
             </main>
         </div>
 
+    </div>
+
+    <!-- Result Modal -->
+    <div id="resultOverlay" class="result-overlay">
+        <div class="result-modal">
+            <h2>✨ AI Generated Image</h2>
+            <img id="resultImage" alt="Generated holding image" />
+            <div class="modal-buttons">
+                <button id="modalDownloadBtn" class="modal-download-btn">⬇ Download</button>
+                <button id="modalCloseBtn" class="modal-close-btn">Close</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -652,6 +806,172 @@
                 btn.textContent = "⬇ Download";
                 btn.disabled = false;
             });
+        });
+
+        // ===== Gemini AI: Generate Person Holding ID Card =====
+        document.getElementById("generateButton").addEventListener("click", async () => {
+            const apiKey = document.getElementById("apiKeyInput").value.trim();
+            const status = document.getElementById("generateStatus");
+            const btn = document.getElementById("generateButton");
+
+            if (!apiKey) {
+                alert("Please enter your Gemini API key first.");
+                document.getElementById("apiKeyInput").focus();
+                return;
+            }
+
+            // Get person photo as base64
+            const mainPhoto = document.getElementById("mainPhoto");
+            const personBase64 = getImageBase64(mainPhoto);
+            if (!personBase64 || mainPhoto.src === defaultPhoto) {
+                alert("Please upload a portrait photo first.");
+                return;
+            }
+
+            // Get ID card as base64 via html2canvas
+            btn.disabled = true;
+            btn.textContent = "⏳ Capturing card...";
+            status.textContent = "Step 1/3: Rendering ID card...";
+
+            let cardBase64;
+            try {
+                const card = document.querySelector(".id-card");
+                const canvas = await html2canvas(card, {
+                    scale: 2,
+                    useCORS: false,
+                    allowTaint: false,
+                    backgroundColor: "#ffffff"
+                });
+                cardBase64 = canvas.toDataURL("image/png").split(",")[1];
+            } catch (err) {
+                console.error("Card capture failed:", err);
+                alert("Failed to capture ID card. See console.");
+                resetGenerateBtn();
+                return;
+            }
+
+            // Call Gemini API
+            btn.textContent = "⏳ Generating with AI...";
+            status.textContent = "Step 2/3: Sending to Gemini API (this may take 15-30s)...";
+
+            const personName = document.getElementById("nameInput").value || "the person";
+
+            const requestBody = {
+                contents: [{
+                    parts: [
+                        {
+                            text: `Generate a realistic photograph of a person holding an ID card in their hand. Use the first reference image as the person's face/appearance, and use the second reference image as the ID card they are holding. The person should be smiling and proudly holding the ID card up near their chest so both their face and the card are clearly visible. The background should be a neutral indoor setting. Make it look like a natural, candid photo. The person's name is ${personName}.`
+                        },
+                        {
+                            inline_data: {
+                                mime_type: "image/png",
+                                data: personBase64
+                            }
+                        },
+                        {
+                            inline_data: {
+                                mime_type: "image/png",
+                                data: cardBase64
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseModalities: ["TEXT", "IMAGE"]
+                }
+            };
+
+            try {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(requestBody)
+                    }
+                );
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    const errMsg = errData?.error?.message || response.statusText;
+                    throw new Error(`API Error ${response.status}: ${errMsg}`);
+                }
+
+                const data = await response.json();
+                status.textContent = "Step 3/3: Processing result...";
+
+                // Find the image part in the response
+                let generatedImageData = null;
+                const parts = data?.candidates?.[0]?.content?.parts || [];
+                for (const part of parts) {
+                    if (part.inline_data) {
+                        generatedImageData = part.inline_data;
+                        break;
+                    }
+                }
+
+                if (!generatedImageData) {
+                    const textContent = parts.map(p => p.text).filter(Boolean).join(" ");
+                    throw new Error("No image in response. Model said: " + (textContent || "(empty)"));
+                }
+
+                // Show result in modal
+                const imgSrc = `data:${generatedImageData.mime_type};base64,${generatedImageData.data}`;
+                showResultModal(imgSrc);
+                status.textContent = "✅ Image generated successfully!";
+
+            } catch (err) {
+                console.error("Gemini API error:", err);
+                status.textContent = "❌ " + err.message;
+                alert("Generation failed: " + err.message);
+            } finally {
+                resetGenerateBtn();
+            }
+        });
+
+        function getImageBase64(imgElement) {
+            try {
+                const canvas = document.createElement("canvas");
+                canvas.width = imgElement.naturalWidth || imgElement.width;
+                canvas.height = imgElement.naturalHeight || imgElement.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(imgElement, 0, 0);
+                return canvas.toDataURL("image/png").split(",")[1];
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function resetGenerateBtn() {
+            const btn = document.getElementById("generateButton");
+            btn.textContent = "✨ Generate Holding Image (AI)";
+            btn.disabled = false;
+        }
+
+        function showResultModal(imgSrc) {
+            const overlay = document.getElementById("resultOverlay");
+            const img = document.getElementById("resultImage");
+            img.src = imgSrc;
+            overlay.classList.add("active");
+        }
+
+        // Modal controls
+        document.getElementById("modalCloseBtn").addEventListener("click", () => {
+            document.getElementById("resultOverlay").classList.remove("active");
+        });
+
+        document.getElementById("resultOverlay").addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) {
+                e.currentTarget.classList.remove("active");
+            }
+        });
+
+        document.getElementById("modalDownloadBtn").addEventListener("click", () => {
+            const img = document.getElementById("resultImage");
+            const link = document.createElement("a");
+            link.download = "id-card-holding.png";
+            link.href = img.src;
+            link.click();
         });
     </script>
 </body>
