@@ -12,6 +12,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Roboto+Condensed:wght@700&family=Oswald:wght@500;600;700&display=swap"
         rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         * {
@@ -110,6 +111,21 @@
         .clear-photo-button {
             background: #0b4570;
             color: #fff;
+        }
+
+        .download-button {
+            background: linear-gradient(135deg, #0b4570, #1a6fa0);
+            color: #fff;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .download-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(11, 69, 112, 0.4);
+        }
+
+        .download-button:active {
+            transform: translateY(0);
         }
 
         /* ID Card Layout */
@@ -439,6 +455,7 @@
             <div class="button-row">
                 <button class="reset-button" type="reset">Reset</button>
                 <button class="clear-photo-button" id="clearPhotoButton" type="button">Reset Photo</button>
+                <button class="download-button" id="downloadButton" type="button">⬇ Download</button>
             </div>
         </form>
 
@@ -523,7 +540,26 @@
     </div>
 
     <script>
-        const defaultPhoto = "https://placehold.co/254x332/dcdcdc/666?text=PORTRAIT";
+        // Generate placeholder image locally as a data URL (avoids CORS issues)
+        function createPlaceholder(w, h, text) {
+            const c = document.createElement("canvas");
+            c.width = w; c.height = h;
+            const ctx = c.getContext("2d");
+            ctx.fillStyle = "#dcdcdc";
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = "#666";
+            ctx.font = "bold 18px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(text, w / 2, h / 2);
+            return c.toDataURL("image/png");
+        }
+
+        const defaultPhoto = createPlaceholder(254, 332, "PORTRAIT");
+
+        // Set initial placeholders
+        document.getElementById("mainPhoto").src = defaultPhoto;
+        document.getElementById("miniPhoto").src = createPlaceholder(104, 136, "GHOST");
 
         function bindText(inputId, cardId, uppercase = false) {
             const input = document.getElementById(inputId);
@@ -561,32 +597,61 @@
             document.getElementById("signatureText").textContent = capitalized || "Signature";
         });
 
-        // Photo Upload Handling
+        // Photo Upload — convert to base64 data URL so html2canvas can read it
         document.getElementById("photoInput").addEventListener("change", (event) => {
             const file = event.target.files[0];
             if (!file) return;
 
-            const imageUrl = URL.createObjectURL(file);
-            document.getElementById("mainPhoto").src = imageUrl;
-            document.getElementById("miniPhoto").src = imageUrl;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById("mainPhoto").src = e.target.result;
+                document.getElementById("miniPhoto").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         });
 
         // Reset Photo
         document.getElementById("clearPhotoButton").addEventListener("click", () => {
             document.getElementById("photoInput").value = "";
             document.getElementById("mainPhoto").src = defaultPhoto;
-            document.getElementById("miniPhoto").src = defaultPhoto;
+            document.getElementById("miniPhoto").src = createPlaceholder(104, 136, "GHOST");
         });
 
         // Full Form Reset
         document.getElementById("cardForm").addEventListener("reset", () => {
             setTimeout(() => {
                 document.getElementById("mainPhoto").src = defaultPhoto;
-                document.getElementById("miniPhoto").src = defaultPhoto;
+                document.getElementById("miniPhoto").src = createPlaceholder(104, 136, "GHOST");
                 document.querySelectorAll("#cardForm input").forEach((field) => {
                     field.dispatchEvent(new Event("input"));
                 });
             }, 0);
+        });
+
+        // Download ID Card as PNG
+        document.getElementById("downloadButton").addEventListener("click", () => {
+            const card = document.querySelector(".id-card");
+            const btn = document.getElementById("downloadButton");
+            btn.textContent = "Rendering…";
+            btn.disabled = true;
+
+            html2canvas(card, {
+                scale: 2,
+                useCORS: false,
+                allowTaint: false,
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = "id-card.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            }).catch(err => {
+                console.error("Download failed:", err);
+                alert("Download failed. See console for details.");
+            }).finally(() => {
+                btn.textContent = "⬇ Download";
+                btn.disabled = false;
+            });
         });
     </script>
 </body>
