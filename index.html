@@ -596,8 +596,12 @@
                 <p>Paste your Google Gemini API key to generate an AI image of the person holding this ID card. Get a
                     key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a></p>
                 <label for="apiKeyInput">API Key</label>
-                <input id="apiKeyInput" type="password" placeholder="AIza..."
-                    value="AIzaSyBIiGq_6EIt4Pp7gES1dhosL72C7Y9vIOY" />
+                <input id="apiKeyInput" type="password" placeholder="Paste your new API key here..." />
+                <div style="display:flex;gap:6px;margin-top:6px;">
+                    <button type="button" id="saveKeyBtn" style="flex:1;padding:7px;background:#0b4570;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;">💾 Save Key</button>
+                    <button type="button" id="checkModelsBtn" style="flex:1;padding:7px;background:#f0f4ff;border:1px solid #b0c4de;border-radius:6px;cursor:pointer;font-size:12px;color:#172d58;font-weight:bold;">🔍 Check Models</button>
+                </div>
+                <pre id="modelsOutput" style="display:none;margin-top:8px;padding:10px;background:#f8f9fa;border-radius:6px;font-size:11px;max-height:150px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;"></pre>
             </div>
         </form>
 
@@ -972,6 +976,45 @@
             link.download = "id-card-holding.png";
             link.href = img.src;
             link.click();
+        });
+
+        // ── API Key: load from localStorage & save ──
+        const savedKey = localStorage.getItem("gemini_api_key");
+        if (savedKey) document.getElementById("apiKeyInput").value = savedKey;
+
+        document.getElementById("saveKeyBtn").addEventListener("click", () => {
+            const key = document.getElementById("apiKeyInput").value.trim();
+            if (!key) { alert("Please paste your API key first."); return; }
+            localStorage.setItem("gemini_api_key", key);
+            document.getElementById("saveKeyBtn").textContent = "✅ Saved!";
+            setTimeout(() => document.getElementById("saveKeyBtn").textContent = "💾 Save Key", 2000);
+        });
+
+        // ── Check which models are available ──
+        document.getElementById("checkModelsBtn").addEventListener("click", async () => {
+            const apiKey = document.getElementById("apiKeyInput").value.trim();
+            const output = document.getElementById("modelsOutput");
+            output.style.display = "block";
+            output.textContent = "Fetching available models...";
+            if (!apiKey) { output.textContent = "Enter your API key first."; return; }
+            try {
+                const res = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}&pageSize=200`
+                );
+                const data = await res.json();
+                if (!res.ok) { output.textContent = "Error: " + (data?.error?.message || res.statusText); return; }
+                const allModels = data.models || [];
+                const imageModels = allModels.filter(m => m.name.toLowerCase().includes("image"));
+                if (imageModels.length > 0) {
+                    output.textContent = "✅ Image models available:\n\n" +
+                        imageModels.map(m => `• ${m.name.replace("models/", "")}`).join("\n");
+                } else {
+                    output.textContent = "⚠️ No image models found. All models:\n" +
+                        allModels.map(m => "• " + m.name.replace("models/", "")).join("\n");
+                }
+            } catch (err) {
+                output.textContent = "❌ " + err.message;
+            }
         });
     </script>
 </body>
