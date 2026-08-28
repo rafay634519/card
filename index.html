@@ -4,280 +4,345 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fictional Sample Card Generator</title>
+    <title>California Identification Card Generator</title>
+
+    <!-- Google Font for Cursive Signature -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Roboto+Condensed:wght@700&family=Oswald:wght@500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
         * {
             box-sizing: border-box;
         }
 
-        .generic-seal {
-            position: absolute;
-            top: 50px;
-            left: 170px;
-            pointer-events: none;
-            z-index: 10;
-            mix-blend-mode: overlay;
-            opacity: 0.8;
-        }
-
         body {
             margin: 0;
             min-height: 100vh;
             padding: 30px 16px;
-            background: #61402d;
+            background: #2b303a;
             font-family: Arial, Helvetica, sans-serif;
         }
 
         .app-layout {
-            width: min(1200px, 100%);
+            width: min(1300px, 100%);
             margin: auto;
             display: grid;
-            grid-template-columns: 310px 1fr;
+            grid-template-columns: 360px 1fr;
             gap: 30px;
             align-items: start;
         }
 
         .card-form {
-            padding: 22px;
+            padding: 24px;
             border-radius: 14px;
-            background: #f5f7f4;
-            box-shadow: 0 14px 35px rgba(0, 0, 0, .28);
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
         }
 
         .card-form h1 {
-            margin: 0 0 8px;
+            margin: 0 0 6px;
             color: #172d58;
-            font-size: 23px;
+            font-size: 22px;
         }
 
         .card-form p {
-            margin: 0 0 18px;
-            color: #8b0000;
-            font-size: 12px;
-            font-weight: bold;
-            line-height: 1.4;
+            margin: 0 0 16px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
         .card-form label {
             display: block;
-            margin-top: 11px;
+            margin-top: 10px;
             color: #334a50;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
+            text-transform: uppercase;
         }
 
         .card-form input,
         .card-form select {
             width: 100%;
-            margin-top: 5px;
-            padding: 9px 10px;
-            border: 1px solid #aeb8b1;
-            border-radius: 7px;
+            margin-top: 4px;
+            padding: 7px 9px;
+            border: 1px solid #ccd3cf;
+            border-radius: 6px;
             outline: none;
             font: inherit;
+            font-size: 13px;
         }
 
         .card-form input:focus,
         .card-form select:focus {
-            border-color: #587866;
-            box-shadow: 0 0 0 3px rgba(88, 120, 102, .16);
+            border-color: #0b4570;
+            box-shadow: 0 0 0 3px rgba(11, 69, 112, 0.15);
         }
 
         .button-row {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 18px;
         }
 
         .button-row button {
             flex: 1;
             padding: 10px;
             border: 0;
-            border-radius: 7px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
         }
 
         .reset-button {
-            background: #e1e6e1;
-            color: #34495e;
+            background: #e2e7e9;
+            color: #334a50;
         }
 
         .clear-photo-button {
-            background: #587866;
+            background: #0b4570;
             color: #fff;
         }
 
-        /* Card Layout */
+        /* ID Card Layout */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: sticky;
+            top: 20px;
+        }
+
         .id-card {
             position: relative;
-            width: 860px;
-            min-height: 540px;
-            padding: 28px 34px;
+            width: 856px;
+            height: 540px;
+            border-radius: 26px;
+            background-color: #fff;
+            /* Replace the background image with your clean card template file */
+            background-image: url('Gemini_Generated_Image_jl2lbhjl2lbhjl2l.jpg');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, .45);
             overflow: hidden;
-            border: 1px solid #aaa;
-            border-radius: 28px;
-            background:
-                linear-gradient(135deg, rgba(255, 255, 255, .78), rgba(227, 232, 226, .86)),
-                repeating-linear-gradient(25deg,
-                    transparent 0 8px,
-                    rgba(55, 110, 90, .07) 9px 10px);
-            box-shadow: 0 14px 35px rgba(0, 0, 0, .35);
-            color: #252525;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
         }
 
-        .id-card::before {
-            content: "CALIFORNIA ID";
+        /* Main Portrait Photo */
+        .photo-box {
             position: absolute;
-            top: 43%;
-            left: -8%;
-            width: 120%;
-            transform: rotate(-18deg);
-            text-align: center;
-            font-size: 48px;
-            font-weight: 800;
-            letter-spacing: 5px;
-            color: rgba(190, 0, 0, .20);
-            pointer-events: none;
-            z-index: 5;
+            top: 92px;
+            left: 41px;
+            width: 254px;
+            height: 332px;
+            overflow: hidden;
+            background: transparent;
+            z-index: 2;
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 3px solid #6f8c78;
-            padding-bottom: 10px;
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .state-name {
-            color: #172d58;
+        /* Signature */
+        .signature {
+            position: absolute;
+            bottom: 46px;
+            left: 55px;
+            font-family: 'Caveat', cursive;
             font-size: 42px;
-            font-weight: 700;
-        }
-
-        .country {
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        .card-title {
-            flex: 1;
-            margin-left: 32px;
-            color: #587866;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .warning {
-            color: #555;
-            font-size: 18px;
-            line-height: 1.1;
-            text-align: right;
-            font-weight: bold;
-        }
-
-        .content {
-            position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: 230px 1fr;
-            gap: 24px;
-            padding-top: 25px;
-        }
-
-        .photo {
-            width: 210px;
-            height: 265px;
-            border: 5px solid rgba(255, 255, 255, .7);
-            object-fit: cover;
-            background: #bed2d2;
-        }
-
-        .details {
-            font-size: 19px;
-            line-height: 1.45;
-        }
-
-        .row {
-            margin-bottom: 7px;
-        }
-
-        .dob-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-top: 8px;
-        }
-
-        .label {
-            display: inline-block;
-            min-width: 62px;
-            color: #4f646b;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .value {
             font-weight: 600;
-            letter-spacing: .5px;
+            color: #1a1a1a;
+            z-index: 10;
+            transform: rotate(-3deg);
+            white-space: nowrap;
         }
 
-        .name {
-            font-size: 25px;
+        /* Phone Numbers Section */
+        .phone-section {
+            position: absolute;
+            top: 114px;
+            left: 308px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .phone-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .phone-label {
+            font-family: 'Arial Black', Gadget, sans-serif;
+            font-size: 19px;
+            color: #0b4570;
+            letter-spacing: 0.5px;
+        }
+
+        .phone-val {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 26px;
+            color: #8b181a;
             letter-spacing: 1px;
         }
 
-        .fake-number {
-            color: #9b4b51;
-            font-size: 25px;
-            font-weight: bold;
-            letter-spacing: 2px;
+        /* Expiration Date */
+        .exp-row {
+            position: absolute;
+            top: 188px;
+            left: 308px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 21px;
+            letter-spacing: 0.5px;
         }
 
-        .mini-photo {
-            width: 80px;
-            height: 100px;
-            object-fit: cover;
-            filter: grayscale(100%);
-            opacity: 0.6;
-            border: 1px solid #bbb;
-            background: #dcdcdc;
-            margin-right: 250px;
+        .exp-label {
+            color: #0b4570;
+            margin-right: 6px;
         }
 
-
-        .bottom {
-            position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 14px;
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid #9aa99e;
-            font-size: 15px;
+        .exp-val {
+            color: #8b181a;
         }
 
-        .bottom strong {
-            display: block;
-            color: #4f646b;
-            font-size: 12px;
+        /* Name and Address Details */
+        .person-info {
+            position: absolute;
+            top: 228px;
+            left: 308px;
+            width: 400px;
+        }
+
+        .full-name {
+            font-family: 'Arial Black', 'Impact', sans-serif;
+            font-size: 28px;
+            color: #111;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.1;
             margin-bottom: 3px;
         }
 
-        .notice {
+        .address-text {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 21px;
+            color: #1a1a1a;
+            line-height: 1.18;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Date of Birth */
+        .dob-container {
             position: absolute;
-            right: 25px;
-            bottom: 15px;
-            z-index: 8;
-            color: #a00000;
-            font-weight: bold;
-            font-size: 13px;
-            letter-spacing: 1px;
+            top: 326px;
+            left: 308px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 23px;
+            letter-spacing: 0.5px;
+        }
+
+        .dob-label {
+            color: #0b4570;
+            margin-right: 6px;
+        }
+
+        .dob-val {
+            color: #8b181a;
+        }
+
+        /* Ghost / Mini Portrait Photo */
+        .mini-photo-box {
+            position: absolute;
+            top: 300px;
+            left: 540px;
+            width: 104px;
+            height: 136px;
+            overflow: hidden;
+            opacity: 0.55;
+            mix-blend-mode: multiply;
+            z-index: 3;
+        }
+
+        .mini-photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Bottom Details Row */
+        .bottom-details {
+            position: absolute;
+            bottom: 45px;
+            left: 345px;
+            display: flex;
+            gap: 14px;
+            font-family: 'Arial Black', Gadget, sans-serif;
+            font-size: 19px;
+            color: #0b4570;
+            z-index: 5;
+        }
+
+        .bottom-item span {
+            color: #111;
+        }
+
+        .bottom-row-2 {
+            position: absolute;
+            bottom: 18px;
+            left: 345px;
+            display: flex;
+            gap: 20px;
+            font-family: 'Arial Black', Gadget, sans-serif;
+            font-size: 19px;
+            color: #0b4570;
+            z-index: 5;
+        }
+
+        /* Class / Endorsement Info (Right Side) */
+        .right-info {
+            position: absolute;
+            top: 168px;
+            right: 80px;
+            text-align: center;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 20px;
+            color: #0b4570;
+            line-height: 1.15;
+        }
+
+        .right-info span {
+            color: #111;
+            display: block;
+        }
+
+        /* Issue Date at bottom right */
+        .issue-block {
+            position: absolute;
+            bottom: 20px;
+            right: 48px;
+            font-family: 'Arial Black', sans-serif;
+            text-align: right;
+            font-size: 16px;
+            line-height: 1.15;
+            color: #0b4570;
+        }
+
+        .issue-block span {
+            color: #111;
         }
 
         @media (max-width: 1220px) {
@@ -287,45 +352,7 @@
             }
 
             .card-form {
-                width: min(860px, 94vw);
-            }
-        }
-
-        @media (max-width: 900px) {
-            .id-card {
-                width: 94vw;
-                min-height: auto;
-                padding: 20px;
-            }
-
-            .content {
-                grid-template-columns: 160px 1fr;
-            }
-
-            .photo {
-                width: 145px;
-                height: 190px;
-            }
-
-            .mini-photo {
-                display: none;
-            }
-
-            .state-name {
-                font-size: 28px;
-            }
-
-            .card-title {
-                margin-left: 10px;
-                font-size: 16px;
-            }
-
-            .warning {
-                font-size: 11px;
-            }
-
-            .bottom {
-                grid-template-columns: repeat(3, 1fr);
+                width: min(856px, 100%);
             }
         }
     </style>
@@ -334,227 +361,207 @@
 <body>
     <div class="app-layout">
 
+        <!-- Form Control -->
         <form id="cardForm" class="card-form">
-            <h1>Sample Card Generator</h1>
-            <p>CALIFORNIA DRIVER LICENSE — SAMPLE IDENTIFICATION.</p>
+            <h1>Card Details</h1>
+            <p>Customize card fields to live-update the template</p>
 
-            <label for="photoInput">Portrait image</label>
+            <label for="photoInput">Portrait Image</label>
             <input id="photoInput" type="file" accept="image/*" />
 
-            <label for="cardNumberInput">Sample card number</label>
-            <input id="cardNumberInput" type="text" value="SAMPLE-0000" maxlength="24" />
+            <div class="form-grid">
+                <div>
+                    <label for="ph1Input">Phone 1 (PH 1)</label>
+                    <input id="ph1Input" type="text" value="415-555-5556" maxlength="15" />
+                </div>
+                <div>
+                    <label for="ph2Input">Phone 2 (PH 2)</label>
+                    <input id="ph2Input" type="text" value="415-555-5556" maxlength="15" />
+                </div>
+            </div>
 
-            <label for="expiryInput">Sample expiry date</label>
-            <input id="expiryInput" type="date" value="2030-01-01" />
+            <div class="form-grid">
+                <div>
+                    <label for="expInput">Expiration Date</label>
+                    <input id="expInput" type="text" value="03/07/2027" maxlength="10" />
+                </div>
+                <div>
+                    <label for="dobInput">Date of Birth</label>
+                    <input id="dobInput" type="text" value="03/07/2019" maxlength="10" />
+                </div>
+            </div>
 
-            <label for="lastNameInput">Last name</label>
-            <input id="lastNameInput" type="text" value="SAMPLE" maxlength="22" />
+            <label for="nameInput">Full Name</label>
+            <input id="nameInput" type="text" value="LIAM TAYLOR" maxlength="28" />
 
-            <label for="firstNameInput">First name</label>
-            <input id="firstNameInput" type="text" value="ALEX" maxlength="22" />
+            <label for="addressInput">Street Address</label>
+            <input id="addressInput" type="text" value="1234 YOUR ST" maxlength="32" />
 
-            <label for="addressInput">Fictional address</label>
-            <input id="addressInput" type="text" value="123 Fictional Avenue" maxlength="35" />
+            <label for="cityInput">City, State, Zip</label>
+            <input id="cityInput" type="text" value="SAN FRANCISCO, CA 94016" maxlength="32" />
 
-            <label for="cityInput">City / region / postal code</label>
-            <input id="cityInput" type="text" value="Example City, ZZ 00000" maxlength="35" />
+            <div class="form-grid">
+                <div>
+                    <label for="classInput">Class Type</label>
+                    <input id="classInput" type="text" value="CHILD" maxlength="10" />
+                </div>
+                <div>
+                    <label for="sexInput">Sex</label>
+                    <input id="sexInput" type="text" value="M" maxlength="2" />
+                </div>
+            </div>
 
-            <label for="dobInput">Date of birth</label>
-            <input id="dobInput" type="date" value="2000-01-01" />
+            <div class="form-grid">
+                <div>
+                    <label for="hairInput">Hair</label>
+                    <input id="hairInput" type="text" value="BLN" maxlength="4" />
+                </div>
+                <div>
+                    <label for="eyesInput">Eyes</label>
+                    <input id="eyesInput" type="text" value="BLU" maxlength="4" />
+                </div>
+            </div>
 
-            <label for="sexInput">Sex marker</label>
-            <select id="sexInput">
-                <option value="X" selected>X</option>
-                <option value="F">F</option>
-                <option value="M">M</option>
-            </select>
+            <div class="form-grid">
+                <div>
+                    <label for="heightInput">Height</label>
+                    <input id="heightInput" type="text" value="3'-01&quot;" maxlength="8" />
+                </div>
+                <div>
+                    <label for="weightInput">Weight</label>
+                    <input id="weightInput" type="text" value="34 lb" maxlength="10" />
+                </div>
+            </div>
 
-            <label for="heightInput">Height</label>
-            <input id="heightInput" type="text" value="5'-08&quot;" maxlength="10" />
-
-            <label for="weightInput">Weight</label>
-            <input id="weightInput" type="text" value="150 lb" maxlength="12" />
-
-            <label for="eyesInput">Eye color</label>
-            <input id="eyesInput" type="text" value="BLU" maxlength="3" />
-
-            <label for="hairInput">Hair color</label>
-            <input id="hairInput" type="text" value="BRN" maxlength="3" />
-
-            <label for="issuedInput">Sample issue date</label>
-            <input id="issuedInput" type="date" value="2026-01-01" />
+            <label for="issInput">Issue Date (ISS)</label>
+            <input id="issInput" type="text" value="12/25/2022" maxlength="10" />
 
             <div class="button-row">
                 <button class="reset-button" type="reset">Reset</button>
-                <button class="clear-photo-button" id="clearPhotoButton" type="button">Clear Photo</button>
+                <button class="clear-photo-button" id="clearPhotoButton" type="button">Reset Photo</button>
             </div>
         </form>
 
-        <main class="id-card" aria-label="Fictional sample identification card">
-            <header class="header">
-                <div class="state-name">
-                    California <span class="country">USA</span>
+        <!-- Template Display -->
+        <div class="card-container">
+            <main class="id-card" aria-label="California ID Card Sample">
+
+                <!-- Main Photo -->
+                <div class="photo-box">
+                    <img id="mainPhoto" src="https://placehold.co/254x332/dcdcdc/666?text=PORTRAIT" alt="Portrait" />
                 </div>
 
-                <div class="card-title">
-                    IDENTIFICATION<br />
-                    CARD
-                </div>
+                <!-- Cursive Signature -->
+                <div id="signatureText" class="signature">Liam Taylor</div>
 
-                <div class="warning">
-                    FEDERAL<br />
-                    LIMITS<br />
-                    APPLY
-                </div>
-            </header>
-
-            <section class="content"><svg class="generic-seal" viewBox="0 0 200 200" width="130" height="130">
-                    <defs>
-                        <!-- Circular path for curved text -->
-                        <path id="textCircle" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0" />
-                    </defs>
-
-                    <!-- Outer and Inner Rings -->
-                    <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(255, 255, 255, 0.6)" stroke-width="3" />
-                    <circle cx="100" cy="100" r="55" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="1.5" />
-
-                    <!-- Curved Text along Path -->
-                    <text fill="rgba(255, 255, 255, 0.7)" font-size="11" font-weight="bold" letter-spacing="3">
-                        <textPath href="#textCircle" startOffset="50%" text-anchor="middle">
-                            FICTIONAL SAMPLE • JUST FOR FUN •
-                        </textPath>
-                    </text>
-
-                    <!-- Center Icon / Graphic -->
-                    <text x="100" y="105" text-anchor="middle" dominant-baseline="middle"
-                        fill="rgba(255, 255, 255, 0.5)" font-size="12" font-weight="bold">
-                        MOCKUP
-                    </text>
-                </svg>
-                <img id="mainPhoto" class="photo" src="https://placehold.co/210x265/d0dddd/34495e?text=PHOTO"
-                    alt="Sample portrait placeholder" />
-
-                <div class="details">
-                    <div class="row">
-                        <span class="label">ID</span>
-                        <span id="cardNumber" class="fake-number">SAMPLE-0000</span>
+                <!-- Phone Numbers -->
+                <div class="phone-section">
+                    <div class="phone-row">
+                        <span class="phone-label">PH 1</span>
+                        <span id="ph1Val" class="phone-val">415-555-5556</span>
                     </div>
-
-                    <div class="row">
-                        <span class="label">EXP</span>
-                        <span id="expiry" class="value">01/01/2030</span>
-                    </div>
-
-                    <div class="row">
-                        <span class="label">LN</span>
-                        <span id="lastName" class="value name">SAMPLE</span>
-                    </div>
-
-                    <div class="row">
-                        <span class="label">FN</span>
-                        <span id="firstName" class="value name">ALEX</span>
-                    </div>
-
-                    <div class="row">
-                        <span id="address">123 Fictional Avenue</span><br />
-                        <span id="city">Example City, ZZ 00000</span>
-                    </div>
-
-                    <div class="row dob-row">
-                        <div class="dob-text">
-                            <span class="label">DOB</span>
-                            <span id="dob" class="value">01/01/2000</span>
-                        </div>
-                        <img id="miniPhoto" class="mini-photo" src="https://placehold.co/125x155/e0e0e0/555?text=SAMPLE"
-                            alt="Small sample portrait placeholder" />
+                    <div class="phone-row">
+                        <span class="phone-label">PH 2</span>
+                        <span id="ph2Val" class="phone-val">415-555-5556</span>
                     </div>
                 </div>
-            </section>
 
-            <section class="bottom">
-                <div>
-                    <strong>SEX</strong>
-                    <span id="sex">X</span>
+                <!-- Expiration -->
+                <div class="exp-row">
+                    <span class="exp-label">EXP</span>
+                    <span id="expVal" class="exp-val">03/07/2027</span>
                 </div>
-                <div>
-                    <strong>HEIGHT</strong>
-                    <span id="height">5'-08"</span>
-                </div>
-                <div>
-                    <strong>WEIGHT</strong>
-                    <span id="weight">150 lb</span>
-                </div>
-                <div>
-                    <strong>EYES</strong>
-                    <span id="eyes">BLU</span>
-                </div>
-                <div>
-                    <strong>HAIR</strong>
-                    <span id="hair">BRN</span>
-                </div>
-                <div>
-                    <strong>ISSUED</strong>
-                    <span id="issued">01/01/2026</span>
-                </div>
-            </section>
 
-            <div class="notice">
-                CALIFORNIA DRIVER LICENSE —AUTHORIZED
-            </div>
-        </main>
+                <!-- Personal Info -->
+                <div class="person-info">
+                    <div id="nameVal" class="full-name">LIAM TAYLOR</div>
+                    <div class="address-text">
+                        <div id="addressVal">1234 YOUR ST</div>
+                        <div id="cityVal">SAN FRANCISCO, CA 94016</div>
+                    </div>
+                </div>
+
+                <!-- DOB -->
+                <div class="dob-container">
+                    <span class="dob-label">DOB</span>
+                    <span id="dobVal" class="dob-val">03/07/2019</span>
+                </div>
+
+                <!-- Ghost Mini Photo -->
+                <div class="mini-photo-box">
+                    <img id="miniPhoto" src="https://placehold.co/104x136/dcdcdc/666?text=GHOST"
+                        alt="Mini Ghost Portrait" />
+                </div>
+
+                <!-- Class -->
+                <div class="right-info">
+                    CLASS
+                    <span id="classVal">CHILD</span>
+                </div>
+
+                <!-- Bottom Specs -->
+                <div class="bottom-details">
+                    <div class="bottom-item">SEX <span id="sexVal">M</span></div>
+                    <div class="bottom-item">HAIR <span id="hairVal">BLN</span></div>
+                    <div class="bottom-item">EYES <span id="eyesVal">BLU</span></div>
+                </div>
+
+                <div class="bottom-row-2">
+                    <div class="bottom-item">HGT <span id="heightVal">3'-01"</span></div>
+                    <div class="bottom-item">WGT <span id="weightVal">34 lb</span></div>
+                </div>
+
+                <!-- Issue Date -->
+                <div class="issue-block">
+                    ISS<br />
+                    <span id="issVal">12/25/2022</span>
+                </div>
+
+            </main>
+        </div>
+
     </div>
 
     <script>
-        const defaultMainPhoto = "https://placehold.co/210x265/d0dddd/34495e?text=PHOTO";
-        const defaultMiniPhoto = "https://placehold.co/125x155/e0e0e0/555?text=SAMPLE";
-
-        function formatDate(dateValue) {
-            if (!dateValue) return "—";
-            const [year, month, day] = dateValue.split("-");
-            return `${month}/${day}/${year}`;
-        }
+        const defaultPhoto = "https://placehold.co/254x332/dcdcdc/666?text=PORTRAIT";
 
         function bindText(inputId, cardId, uppercase = false) {
             const input = document.getElementById(inputId);
-            const cardValue = document.getElementById(cardId);
+            const target = document.getElementById(cardId);
 
-            function updateCard() {
-                let value = input.value.trim() || "—";
-                if (uppercase) value = value.toUpperCase();
-                cardValue.textContent = value;
+            function update() {
+                let val = input.value.trim();
+                target.textContent = uppercase ? val.toUpperCase() : val;
             }
 
-            input.addEventListener("input", updateCard);
-            input.addEventListener("change", updateCard);
+            input.addEventListener("input", update);
+            input.addEventListener("change", update);
         }
 
-        function bindDate(inputId, cardId) {
-            const input = document.getElementById(inputId);
-            const cardValue = document.getElementById(cardId);
+        // Live Binding
+        bindText("ph1Input", "ph1Val");
+        bindText("ph2Input", "ph2Val");
+        bindText("expInput", "expVal");
+        bindText("nameInput", "nameVal", true);
+        bindText("addressInput", "addressVal", true);
+        bindText("cityInput", "cityVal", true);
+        bindText("dobInput", "dobVal");
+        bindText("classInput", "classVal", true);
+        bindText("sexInput", "sexVal", true);
+        bindText("hairInput", "hairVal", true);
+        bindText("eyesInput", "eyesVal", true);
+        bindText("heightInput", "heightVal");
+        bindText("weightInput", "weightVal");
+        bindText("issInput", "issVal");
 
-            function updateCard() {
-                cardValue.textContent = formatDate(input.value);
-            }
+        // Sync Signature with Name
+        document.getElementById("nameInput").addEventListener("input", (e) => {
+            const words = e.target.value.toLowerCase().split(' ');
+            const capitalized = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            document.getElementById("signatureText").textContent = capitalized || "Signature";
+        });
 
-            input.addEventListener("input", updateCard);
-            input.addEventListener("change", updateCard);
-        }
-
-        bindText("cardNumberInput", "cardNumber", true);
-        bindText("lastNameInput", "lastName", true);
-        bindText("firstNameInput", "firstName", true);
-        bindText("addressInput", "address");
-        bindText("cityInput", "city");
-        bindText("sexInput", "sex", true);
-        bindText("heightInput", "height");
-        bindText("weightInput", "weight");
-        bindText("eyesInput", "eyes", true);
-        bindText("hairInput", "hair", true);
-
-        bindDate("expiryInput", "expiry");
-        bindDate("dobInput", "dob");
-        bindDate("issuedInput", "issued");
-
+        // Photo Upload Handling
         document.getElementById("photoInput").addEventListener("change", (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -564,20 +571,20 @@
             document.getElementById("miniPhoto").src = imageUrl;
         });
 
+        // Reset Photo
         document.getElementById("clearPhotoButton").addEventListener("click", () => {
             document.getElementById("photoInput").value = "";
-            document.getElementById("mainPhoto").src = defaultMainPhoto;
-            document.getElementById("miniPhoto").src = defaultMiniPhoto;
+            document.getElementById("mainPhoto").src = defaultPhoto;
+            document.getElementById("miniPhoto").src = defaultPhoto;
         });
 
+        // Full Form Reset
         document.getElementById("cardForm").addEventListener("reset", () => {
             setTimeout(() => {
-                document.getElementById("mainPhoto").src = defaultMainPhoto;
-                document.getElementById("miniPhoto").src = defaultMiniPhoto;
-
-                document.querySelectorAll("#cardForm input, #cardForm select").forEach((field) => {
+                document.getElementById("mainPhoto").src = defaultPhoto;
+                document.getElementById("miniPhoto").src = defaultPhoto;
+                document.querySelectorAll("#cardForm input").forEach((field) => {
                     field.dispatchEvent(new Event("input"));
-                    field.dispatchEvent(new Event("change"));
                 });
             }, 0);
         });
